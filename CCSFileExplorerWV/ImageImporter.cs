@@ -54,17 +54,17 @@ namespace CCSFileExplorerWV
             foreach(ObjectEntry obj in file.objects)
                 foreach (Block b in obj.blocks)
                 {
-                    if (b.type == 0xCCCC0400 && currPalette == null) currPalette = b;
-                    if (b.type == 0xCCCC0300 && currTexture == null) currTexture = b;
+                    if (b.BlockID == 0xCCCC0400 && currPalette == null) currPalette = b;
+                    if (b.BlockID == 0xCCCC0300 && currTexture == null) currTexture = b;
                 }
             if (currPalette == null || currTexture == null)
             {
                 this.Close();
                 return;
             }
-            expectedCount = BitConverter.ToInt32(currPalette.data, 0xC);
+            expectedCount = BitConverter.ToInt32(currPalette.Data, 0xC);
             textBox1.Text = expectedCount.ToString();
-            pic1.Image = currOutput = currInput = CCSFile.CreateImage(currPalette.data, currTexture.data);
+            pic1.Image = currOutput = currInput = CCSFile.CreateImage(currPalette.Data, currTexture.Data);
             expectedSizeX = currInput.Width;
             expectedSizeY = currInput.Height;
             comboBox1.Items.Clear();
@@ -215,17 +215,17 @@ namespace CCSFileExplorerWV
             {
                 if (i < list.Length)
                 {
-                    currPalette.data[i * 4 + 0x10] = list[i].R;
-                    currPalette.data[i * 4 + 0x11] = list[i].G;
-                    currPalette.data[i * 4 + 0x12] = list[i].B;
-                    currPalette.data[i * 4 + 0x13] = list[i].A;
+                    currPalette.Data[i * 4 + 0x10] = list[i].R;
+                    currPalette.Data[i * 4 + 0x11] = list[i].G;
+                    currPalette.Data[i * 4 + 0x12] = list[i].B;
+                    currPalette.Data[i * 4 + 0x13] = list[i].A;
                 }
                 else
                 {
-                    currPalette.data[i * 4 + 0x10] = 0;
-                    currPalette.data[i * 4 + 0x11] = 0;
-                    currPalette.data[i * 4 + 0x12] = 0;
-                    currPalette.data[i * 4 + 0x13] = 0;
+                    currPalette.Data[i * 4 + 0x10] = 0;
+                    currPalette.Data[i * 4 + 0x11] = 0;
+                    currPalette.Data[i * 4 + 0x12] = 0;
+                    currPalette.Data[i * 4 + 0x13] = 0;
                 }
             }
             Bitmap bmp = new Bitmap(currOutput);
@@ -237,14 +237,14 @@ namespace CCSFileExplorerWV
                     {
                         c1 = bmp.GetPixel(x * 2 + 1, expectedSizeY - y - 1);
                         c2 = bmp.GetPixel(x * 2, expectedSizeY - y - 1);
-                        currTexture.data[0x18 + pos++] = (byte)((FindColorIndex(c1, list) << 4) + FindColorIndex(c2, list));
+                        currTexture.Data[0x18 + pos++] = (byte)((FindColorIndex(c1, list) << 4) + FindColorIndex(c2, list));
                     }
             else if (expectedCount == 256)
                 for (int y = 0; y < expectedSizeY; y++)
                     for (int x = 0; x < expectedSizeX; x++)
                     {
                         c1 = bmp.GetPixel(x, expectedSizeY - y - 1);
-                        currTexture.data[0x18 + pos++] = FindColorIndex(c1, list);
+                        currTexture.Data[0x18 + pos++] = FindColorIndex(c1, list);
                     }
             exitok = true;
             this.Close();

@@ -32,9 +32,9 @@ namespace CCSFileExplorerWV.CCSF
 
         public Vector3f(byte[] data, int id)
         {
-            this.X = ((data[0] & 0XFF) / 256.0F + data[1]);
-            this.Y = ((data[2] & 0XFF) / 256.0F + data[3]);
-            this.Z = ((data[4] & 0XFF) / 256.0F + data[5]);
+            this.X = (((sbyte)data[0] & 0XFF) / 256.0F + (sbyte)data[1]);
+            this.Y = (((sbyte)data[2] & 0XFF) / 256.0F + (sbyte)data[3]);
+            this.Z = (((sbyte)data[4] & 0XFF) / 256.0F + (sbyte)data[5]);
 
             this.ID = id;
         }

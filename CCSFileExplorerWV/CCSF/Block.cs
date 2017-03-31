@@ -10,9 +10,26 @@ namespace CCSFileExplorerWV
 {
     public abstract class Block
     {
-        public uint type;
-        public uint id;
-        public byte[] data;
+        public uint BlockID;
+        public uint Size;
+        public uint ID;
+        public byte[] Data;
+        public CCSFile CCSFile; // containing file
+        public FileEntry FileEntry;
+        public ObjectEntry ObjectEntry;
+
+        virtual public byte[] FullBlockData
+        {
+            get
+            {
+                MemoryStream m = new MemoryStream();
+                m.Write(BitConverter.GetBytes(BlockID), 0, 4);
+                m.Write(BitConverter.GetBytes(Size), 0, 4);
+                m.Write(BitConverter.GetBytes(ID), 0, 4);
+                m.Write(Data, 0, Data.Length);
+                return m.ToArray();
+            }
+        }
 
         public abstract TreeNode ToNode();
         public abstract void WriteBlock(Stream s);
@@ -42,7 +59,7 @@ namespace CCSFileExplorerWV
                     result = new BlockDefault(s);
                     break;
             }
-            result.type = type;
+            result.BlockID = type;
             return result;
         }
 
@@ -51,6 +68,18 @@ namespace CCSFileExplorerWV
             byte[] buff = new byte[4];
             s.Read(buff, 0, 4);
             return BitConverter.ToUInt32(buff, 0);
+        }
+
+        public static string ReadFixedLenString(byte[] buff, int pos, int len)
+        {
+            string result = "";
+            int l = 0;
+            while (buff[pos] != 0 && l < len)
+            {
+                result += (char)buff[pos++];
+                l++;
+            }
+            return result;
         }
 
         public static string ReadString(byte[] buff, int pos)

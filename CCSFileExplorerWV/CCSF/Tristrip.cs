@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CCSFileExplorerWV.CCSF
 {
-    public class Triangle
+    public class Tristrip
     {
         public Vector3f V1 { get; set; }
         public Vector3f V2 { get; set; }
@@ -22,12 +22,12 @@ namespace CCSFileExplorerWV.CCSF
             }
         }
 
-        public Triangle(Triangle other)
+        public Tristrip(Tristrip other)
             : this(other.V1, other.V2, other.V3)
         {
         }
 
-        public Triangle(Vector3f V1, Vector3f V2, Vector3f V3)
+        public Tristrip(Vector3f V1, Vector3f V2, Vector3f V3)
         {
             this.V1 = new Vector3f(V1);
             this.V2 = new Vector3f(V2);
@@ -41,6 +41,6 @@ namespace CCSFileExplorerWV.CCSF
             return "f " + V1.ID + "/" + V1.ID + " " + V2.ID + "/" + V2.ID + " " + V3.ID + "/" + V3.ID;
         }
 
-        public bool Equals(Triangle other) { return Normal.Equals(other.Normal); }
+        public bool Equals(Tristrip other) { return Normal.Equals(other.Normal); }
     }
 }

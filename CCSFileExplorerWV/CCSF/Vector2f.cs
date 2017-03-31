@@ -32,8 +32,8 @@ namespace CCSFileExplorerWV.CCSF
 
         public Vector2f(byte[] data, int id)
         {
-            U = ((data[0] & 0xFF) / 256.0F + data[1]);
-            V = ((data[2] & 0xFF) / 256.0F + data[3]);
+            U = (((sbyte)data[0] & 0xFF) / 256.0F + (sbyte)data[1]);
+            V = (((sbyte)data[2] & 0xFF) / 256.0F + (sbyte)data[3]);
 
             this.ID = id;
         }

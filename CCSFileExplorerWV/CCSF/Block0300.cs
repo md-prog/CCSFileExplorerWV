@@ -12,23 +12,34 @@ namespace CCSFileExplorerWV
     {
         public Block0300(Stream s)
         {
-            uint size = Block.ReadUInt32(s) - 51;
-            id = Block.ReadUInt32(s);
-            data = new byte[size * 4];
-            s.Read(data, 0, (int)(size * 4));
+            Size = Block.ReadUInt32(s);
+            ID = Block.ReadUInt32(s);
+
+            uint size = Size - 1;
+
+            MemoryStream m = new MemoryStream();
+            uint u = 0, l = 0;
+            while (!isValidBlockType(u = ReadUInt32(s)) && l++ < size)
+            {
+                m.Write(BitConverter.GetBytes(u), 0, 4);
+            }
+            if (isValidBlockType(u))
+                s.Seek(-4, SeekOrigin.Current);
+
+            Data = m.ToArray();
         }
 
         public override TreeNode ToNode()
         {
-            return new TreeNode(type.ToString("X8") + " Size: 0x" + data.Length.ToString("X"));
+            return new TreeNode(BlockID.ToString("X8") + " Size: 0x" + Data.Length.ToString("X"));
         }
 
         public override void WriteBlock(Stream s)
         {
-            WriteUInt32(s, type);
-            WriteUInt32(s, (uint)(data.Length / 4 + 51));
-            WriteUInt32(s, id);
-            s.Write(data, 0, data.Length);
+            WriteUInt32(s, BlockID);
+            WriteUInt32(s, (uint)(Data.Length / 4 + 51));
+            WriteUInt32(s, ID);
+            s.Write(Data, 0, Data.Length);
         }
     }
 }

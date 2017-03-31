@@ -12,30 +12,31 @@ namespace CCSFileExplorerWV
     {
         public BlockDefault(uint _type, uint _id, byte[] _data)
         {
-            type = _type;
-            id = _id;
-            data = _data;
+            BlockID = _type;
+            ID = _id;
+            Data = _data;
         }
 
         public BlockDefault(Stream s)
         {
-            uint size = Block.ReadUInt32(s) - 1;
-            id = Block.ReadUInt32(s);
-            data = new byte[size * 4];
-            s.Read(data, 0, (int)(size * 4));
+            Size = Block.ReadUInt32(s);
+            uint size = Size - 1;
+            ID = Block.ReadUInt32(s);
+            Data = new byte[size * 4];
+            s.Read(Data, 0, (int)(size * 4));
         }
 
         public override TreeNode ToNode()
         {
-            return new TreeNode(type.ToString("X8") + " Size: 0x" + data.Length.ToString("X"));
+            return new TreeNode(BlockID.ToString("X8") + " Size: 0x" + Data.Length.ToString("X"));
         }
 
         public override void WriteBlock(Stream s)
         {
-            WriteUInt32(s, type);
-            WriteUInt32(s, (uint)(data.Length / 4 + 1));
-            WriteUInt32(s, id);
-            s.Write(data, 0, data.Length);
+            WriteUInt32(s, BlockID);
+            WriteUInt32(s, (uint)(Data.Length / 4 + 1));
+            WriteUInt32(s, ID);
+            s.Write(Data, 0, Data.Length);
         }
     }
 }

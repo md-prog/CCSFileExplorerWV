@@ -11,15 +11,20 @@ namespace CCSFileExplorerWV
 {
     public class CCSFile
     {
+        public enum FileVersionEnum { HACK_GU, IMOQF }
+
+        public FileVersionEnum FileVersion;
+
         public byte[] raw;
         public bool isvalid;
         public Block0001 header;
         public Block0002 toc;
         public List<FileEntry> files;
 
-        public CCSFile(byte[] rawBuffer)
+        public CCSFile(byte[] rawBuffer, FileVersionEnum FileVersion)
         {
-            raw = rawBuffer;
+            this.raw = rawBuffer;
+            this.FileVersion = FileVersion;
             Reload();
         }
 
@@ -30,26 +35,34 @@ namespace CCSFileExplorerWV
             m.Seek(0, 0);
             List<Block> blocks = new List<Block>();
             while (m.Position < raw.Length)
-                blocks.Add(Block.ReadBlock(m));
+            {
+                Block b = Block.ReadBlock(m);
+                b.CCSFile = this;
+                blocks.Add(b);
+            }
             if (blocks.Count == 0)
                 return;
-            if (blocks[blocks.Count - 1].type != 0xCCCCFF01 ||
-                blocks[blocks.Count - 1].id != 0xFFFFFFFF)
+            if (blocks[blocks.Count - 1].BlockID != 0xCCCCFF01 ||
+                blocks[blocks.Count - 1].ID != 0xFFFFFFFF)
                 return;
             isvalid = true;
             header = (Block0001)blocks[0];
             toc = (Block0002)blocks[1];
             files = new List<FileEntry>();
-            for (int i = 0; i < toc.filecount; i++)
+            for (int i = 0; i < toc.FileCount; i++)
             {
                 FileEntry entry = new FileEntry(toc.filenames[i]);
-                for (int j = 0; j < toc.objcount; j++)
+                for (int j = 0; j < toc.ObjCount; j++)
                     if (toc.indexes[j] - 1 == i)
                     {
                         ObjectEntry obj = new ObjectEntry(toc.objnames[j]);
                         for (int k = 2; k < blocks.Count; k++)
-                            if (blocks[k].id - 1 == j)
+                            if (blocks[k].ID - 1 == j)
+                            {
                                 obj.blocks.Add(blocks[k]);
+                                blocks[k].ObjectEntry = obj;
+                                blocks[k].FileEntry = entry;
+                            }
                         entry.objects.Add(obj);
                     }
                 files.Add(entry);
