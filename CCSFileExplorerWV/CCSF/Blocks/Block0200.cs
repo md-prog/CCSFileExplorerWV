@@ -9,6 +9,9 @@ using System.Windows.Forms;
 
 namespace CCSFileExplorerWV.CCSF.Blocks
 {
+    /**
+     * Material
+     */
     public class Block0200 : Block
     {
         public List<uint> unknown;

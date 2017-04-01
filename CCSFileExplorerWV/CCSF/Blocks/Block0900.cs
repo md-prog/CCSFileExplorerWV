@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace CCSFileExplorerWV.CCSF.Blocks
 {
+    /**
+     * CMP
+     */
     public class Block0900 : Block
     {
         public List<uint> unknown;

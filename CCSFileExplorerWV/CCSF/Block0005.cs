@@ -33,7 +33,7 @@ namespace CCSFileExplorerWV
 
         public override TreeNode ToNode()
         {
-            return new TreeNode(BlockID.ToString("X8") + " Size: 0x" + Data.Length.ToString("X"));
+            return new TreeNode(BlockID.ToString("X8") + "ID:0x" + ID.ToString("X") + " Size: 0x" + Data.Length.ToString("X"));
         }
 
         public override void WriteBlock(Stream s)

@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace CCSFileExplorerWV
 {
+    /**
+     * Image
+     */
     public class Block0300 : Block
     {
         public Block0300(Stream s)
@@ -31,7 +34,7 @@ namespace CCSFileExplorerWV
 
         public override TreeNode ToNode()
         {
-            return new TreeNode(BlockID.ToString("X8") + " Size: 0x" + Data.Length.ToString("X"));
+            return new TreeNode(BlockID.ToString("X8") + "ID:0x" + ID.ToString("X") + " Size: 0x" + Data.Length.ToString("X"));
         }
 
         public override void WriteBlock(Stream s)

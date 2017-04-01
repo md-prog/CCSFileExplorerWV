@@ -9,6 +9,9 @@ using System.Windows.Forms;
 
 namespace CCSFileExplorerWV.CCSF.Blocks
 {
+    /**
+     * ANIMATION
+     */
     public class Block0700: Block
     {
         public uint unk1;

@@ -11,7 +11,7 @@ namespace CCSFileExplorerWV
 {
 
     /**
-     * MDL Chunk
+     * MDL(Mesh) Chunk
      * 
      * .Hack/G.U. Version
      * 
@@ -46,6 +46,8 @@ namespace CCSFileExplorerWV
         public List<ModelData> models;
         public uint Unknown2;
         public uint Unknown3;
+        public ushort Unknown3W1;
+        public ushort Unknown3W2;
         public uint Unknown4;
         public uint Unknown5;
         public uint Unknown6;
@@ -71,15 +73,14 @@ namespace CCSFileExplorerWV
             {
                 m.Write(BitConverter.GetBytes(u), 0, 4);
             }
-            if(isValidBlockType(u))
-                s.Seek(-4, SeekOrigin.Current);
+            s.Seek(-4, SeekOrigin.Current);
 
             Data = m.ToArray();
         }
 
         public override TreeNode ToNode()
         {
-            return new TreeNode(BlockID.ToString("X8") + " Size(bytes): 0x" + Data.Length.ToString("X"));
+            return new TreeNode(BlockID.ToString("X8") + "ID:0x" + ID.ToString("X") + " Size(bytes): 0x" + Data.Length.ToString("X"));
         }
 
         public override void WriteBlock(Stream s)
@@ -106,8 +107,10 @@ namespace CCSFileExplorerWV
             MemoryStream m = new MemoryStream();
             Unknown2 = BitConverter.ToUInt32(Data, 0); // 0x0C
             Unknown3 = BitConverter.ToUInt32(Data, 4); // 0x10
-            Unknown4 = BitConverter.ToUInt32(Data, 8); // 0x14
-            Unknown5 = BitConverter.ToUInt32(Data, 12); // 0x18
+            Unknown3W1 = BitConverter.ToUInt16(Data, 4); // 0x10
+            Unknown3W2 = BitConverter.ToUInt16(Data, 6); // 0x14
+            Unknown4 = BitConverter.ToUInt32(Data, 8); // 0x16
+            Unknown5 = BitConverter.ToUInt32(Data, 12); // 0x18, mostly 70 00 00 00
 
             if (Unknown2 != 0 && Unknown3 != 0)
             {
@@ -120,7 +123,7 @@ namespace CCSFileExplorerWV
                 }
                 m.Seek(0, 0);
                 while (m.Position < m.Length)
-                    models.Add(new ModelData(m));
+                    models.Add(new ModelData(m, this));
             }
         }
 
@@ -147,7 +150,8 @@ namespace CCSFileExplorerWV
                 if (CCSFile.FileVersion == CCSFile.FileVersionEnum.IMOQF)
                 {
                     List<float[]> trilist = ModelToFloats(mdl);
-                    sb.Append("g Object\r\n");
+                    sb.Append("#Exported by CCSFileExplorerWV(updated by klokt.valg)\r\n");
+                    sb.AppendFormat("o Object_{0}\r\n", mdl.Unk1);
                     sb.AppendFormat("\r\n# {0} vertices\r\n\r\n", trilist.Count);
                     foreach (float[] v in trilist)
                         sb.AppendFormat("v {0} {1} {2}\r\n", v[0], v[1], v[2]);
@@ -162,7 +166,8 @@ namespace CCSFileExplorerWV
                 }
                 else if (CCSFile.FileVersion == CCSFile.FileVersionEnum.HACK_GU)
                 {
-                    sb.Append ("g Object\r\n");
+                    sb.Append("#Exported by CCSFileExplorerWV(updated by klokt.valg)\r\n");
+                    sb.AppendFormat("o Object_{0}\r\n", mdl.Unk1);
                     sb.AppendFormat("\r\n# {0} vertices\r\n\r\n", mdl.Vertex.Count);
                     foreach (var v in mdl.Vertex)
                         sb.AppendFormat("{0}\r\n", v.ToString());
@@ -235,15 +240,24 @@ namespace CCSFileExplorerWV
                 }
                 float[] v = new float[5];
                 for (int j = 0; j < 3; j++)
-                    v[j] = BitConverter.ToInt16(vertices[strip[i]], j * 2);
+                {
+                    //v[j] = BitConverter.ToInt16(vertices[strip[i]], j * 2);
+                    v[j] = (((sbyte)vertices[strip[i]][j * 2] & 0XFF) / 256.0F + (sbyte)vertices[strip[i]][j * 2 + 1]);
+                }
                 result.Add(v);
                 v = new float[5];
                 for (int j = 0; j < 3; j++)
-                    v[j] = BitConverter.ToInt16(vertices[strip[i2]], j * 2);
+                {
+                    //v[j] = BitConverter.ToInt16(vertices[strip[i2]], j * 2);
+                    v[j] = (((sbyte)vertices[strip[i2]][j*2] & 0XFF) / 256.0F + (sbyte)vertices[strip[i2]][j * 2 + 1]);
+                }
                 result.Add(v);
                 v = new float[5];
                 for (int j = 0; j < 3; j++)
-                    v[j] = BitConverter.ToInt16(vertices[strip[i3]], j * 2);
+                {
+                    //v[j] = BitConverter.ToInt16(vertices[strip[i3]], j * 2);
+                    v[j] = (((sbyte)vertices[strip[i3]][j * 2] & 0XFF) / 256.0F + (sbyte)vertices[strip[i3]][j * 2 + 1]);
+                }
                 result.Add(v);
             }
             return result;
@@ -251,6 +265,7 @@ namespace CCSFileExplorerWV
 
         public class ModelData
         {
+            public Block0800 OwnerBlock;
             public uint Unk1;
             public uint Unk2;
             public uint VertexCount;
@@ -264,11 +279,18 @@ namespace CCSFileExplorerWV
             public List<Tristrip> Tristrips;
 
 
-            public ModelData(Stream s)
+            public ModelData(Stream s, Block0800 OwnerBlock)
             {
+                this.OwnerBlock = OwnerBlock;
+
                 Unk1 = ReadUInt32(s); // 0x1c
                 Unk2 = ReadUInt32(s); // 0x20
                 VertexCount = ReadUInt32(s); //0x24
+                if (OwnerBlock.Unknown3W2 > 1)
+                {
+                    VertexCount = Unk2;//0x20
+                    Unk2 = ReadUInt32(s); //0x28
+                }
                 VertexBytes = new List<byte[]>();
                 Vertex = new List<Vector3f>();
                 byte[] buff;
@@ -315,7 +337,7 @@ namespace CCSFileExplorerWV
                         size++;
                     } else if ((started) && (ft[i].Connect != 0)) {
                         started = false;
-        
+
                         resolveTristrip(i - size, size, ft[(i - size)].Connect);
                         size = 0;
                     }
@@ -324,15 +346,17 @@ namespace CCSFileExplorerWV
                         size += 2;
                         i++;
                     }
-                    if (i == ft.Count- 1) {
+                    if (i == ft.Count - 1) {
                         resolveTristrip(i - size + 1, size, ft[(i - size + 1)].Connect);
                     }
                 }
 
-                // read unknown data block (size of VertextCount)
-                UnknownData = new List<uint>();
-                for (int i = 0; i < VertexCount; i++)
-                    UnknownData.Add(ReadUInt32(s));
+                if (OwnerBlock.Unknown3W2 <= 1) { 
+                    // read unknown data block (size of VertextCount)
+                    UnknownData = new List<uint>();
+                    for (int i = 0; i < VertexCount; i++)
+                        UnknownData.Add(ReadUInt32(s));
+                }
 
                 // read texture block
                 UVBytes = new List<byte[]>();
