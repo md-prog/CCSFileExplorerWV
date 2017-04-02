@@ -88,6 +88,7 @@
     <Compile Include="CCSF\Blocks\Block0108.cs" />
     <Compile Include="CCSF\Blocks\Block0200.cs" />
     <Compile Include="CCSF\Blocks\Block0300.cs" />
+    <Compile Include="CCSF\Block0400.cs" />
     <Compile Include="CCSF\Blocks\Block0400.cs" />
     <Compile Include="CCSF\Blocks\Block0500.cs" />
     <Compile Include="CCSF\Blocks\Block0502.cs" />

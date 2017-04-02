@@ -14,6 +14,7 @@ namespace CCSFileExplorerWV.CCSF
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
+        public float W { get; set; }
 
         public Vector3f() { }
 
@@ -22,6 +23,7 @@ namespace CCSFileExplorerWV.CCSF
             this.X = X;
             this.Y = Y;
             this.Z = Z;
+            this.W = 1.0F;
         }
 
         public Vector3f(Vector3f v)
@@ -35,7 +37,7 @@ namespace CCSFileExplorerWV.CCSF
             this.X = (((sbyte)data[0] & 0XFF) / 256.0F + (sbyte)data[1]);
             this.Y = (((sbyte)data[2] & 0XFF) / 256.0F + (sbyte)data[3]);
             this.Z = (((sbyte)data[4] & 0XFF) / 256.0F + (sbyte)data[5]);
-
+            this.W = 1.0F;
             this.ID = id;
         }
 
