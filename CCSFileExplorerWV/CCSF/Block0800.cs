@@ -313,8 +313,12 @@ namespace CCSFileExplorerWV
                             VertexCount = Unk2;//0x20
                             Unk2 = ReadUInt32(s); //0x28
                         }
-                        else
+                        else if (OwnerBlock.Unknown3W1 > 0xFF)
                         {
+                            FormatVariant = 4;
+                        }
+                        else
+                        { 
                             FormatVariant = 2;
                         }
                     }
