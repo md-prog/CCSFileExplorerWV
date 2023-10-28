@@ -1,15 +1,15 @@
-﻿this tool is for the game [dot hack frägment](https://www.dothack.org/)
+﻿This tool is for the game [dot hack frägment](https://www.dothack.org/)
 
-it can unpack and repack DATA.bin from the game iso
+Tt can unpack and repack DATA.bin from the game iso
 
-the extracted CCSFiles can then be loaded into the tool and its containing data explored
+The extracted CCSFiles can then be loaded into the tool and its containing data explored
 
 URLS:
   - [.Hack Community](https://www.dothack.org/)
-  - [Fadom.com](https://dothack.fandom.com/wiki/Fr%C3%A4gment)
+  - [Fandom.com](https://dothack.fandom.com/wiki/Fr%C3%A4gment)
 
 
-features:
+Features:
 
 - can unpack .bin files to folders
 
@@ -28,8 +28,9 @@ features:
 - can save CSS back
 
 
-screenshots: 
+Screenshots: 
 
-http://i.imgur.com/FJUqlSW.png
+![Screenshot1](http://i.imgur.com/FJUqlSW.png)
 
-http://i.imgur.com/cGu8hcd.png
+![Screenshot2](http://i.imgur.com/cGu8hcd.png)
+
